@@ -468,25 +468,25 @@ assign PW_WB = (L_WB) ? MEM_WB_DATA : ALU_WB;
 // =============================================================
 // DEBUG MONITOR (temporary for debugging)
 // =============================================================
-always @(posedge clk) begin
-    $display("DBG t=%0t | PC=%0d | I_ID=%h | RF_LE_ID=%b | RF_LE_EX=%b | RF_LE_MEM=%b | RF_LE_WB=%b | RD_ID=%0d | RD_EX=%0d | RD_MEM=%0d | RD_WB=%0d | PW_WB=%h",
-             $time, PC_ID, I_ID,
-             RF_LE_ID, RF_LE_EX, RF_LE_MEM, RF_LE_WB,
-             RD_ID, RD_EX, RD_MEM, RD_WB, PW_WB);
-end
+// always @(posedge clk) begin
+//     $display("DBG t=%0t | PC=%0d | I_ID=%h | RF_LE_ID=%b | RF_LE_EX=%b | RF_LE_MEM=%b | RF_LE_WB=%b | RD_ID=%0d | RD_EX=%0d | RD_MEM=%0d | RD_WB=%0d | PW_WB=%h",
+//              $time, PC_ID, I_ID,
+//              RF_LE_ID, RF_LE_EX, RF_LE_MEM, RF_LE_WB,
+//              RD_ID, RD_EX, RD_MEM, RD_WB, PW_WB);
+// end
 
-always @(posedge clk) begin
-    $display("DBG2 t=%0t | ALU_OUT_EX=%h | ALU_OUT_MEM=%h | DO_MEM=%h | ALU_WB=%h | MEM_WB_DATA=%h | L_EX=%b | L_MEM=%b | L_WB=%b",
-             $time,
-             ALU_OUT_EX,
-             ALU_OUT_MEM,
-             DO_MEM,
-             ALU_WB,
-             MEM_WB_DATA,
-             L_EX,
-             L_MEM,
-             L_WB);
-end
+// always @(posedge clk) begin
+//     $display("DBG2 t=%0t | ALU_OUT_EX=%h | ALU_OUT_MEM=%h | DO_MEM=%h | ALU_WB=%h | MEM_WB_DATA=%h | L_EX=%b | L_MEM=%b | L_WB=%b",
+//              $time,
+//              ALU_OUT_EX,
+//              ALU_OUT_MEM,
+//              DO_MEM,
+//              ALU_WB,
+//              MEM_WB_DATA,
+//              L_EX,
+//              L_MEM,
+//              L_WB);
+// end
 
 
 

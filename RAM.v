@@ -24,7 +24,7 @@ module RAM (
         for (i = 0; i < 512; i = i + 1)
             Mem[i] = 8'h00;
         // Load same code as ROM
-        $readmemh("debugging_code_SPARC.txt", Mem);
+        
     end
 
     // ============================
@@ -38,7 +38,7 @@ module RAM (
                 // BYTE
                 2'b00: begin
                     if (SE)
-                        DO = {{24{Mem[A][7]}}, Mem[A]};
+                        DO = $signed(Mem[A]);
                     else
                         DO = {24'b0, Mem[A]};
                 end

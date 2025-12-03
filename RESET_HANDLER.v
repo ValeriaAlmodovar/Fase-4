@@ -26,13 +26,13 @@ module reset_handler (
         else if (BI) begin
             // Branch tomado
             nPC_sel = 2'b01;  // usar TAG
-            IF_ID_R = 1'b1;   // flush
+            //IF_ID_R = 1'b1;   // flush
         end
 
         else if (CALL) begin
             // CALL salta igual que branch, pero PC+8 se escribe
             nPC_sel = 2'b01;  // usar TAG
-            IF_ID_R = 1'b1;   // flush
+            //IF_ID_R = 1'b1;   // flush
         end
 
         else if (J_L || J) begin
