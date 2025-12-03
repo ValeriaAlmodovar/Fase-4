@@ -11,14 +11,17 @@ module TAG (
 );
 
     // Branch displacement: disp22 << 2
-    wire [31:0] BRANCH_TARGET;
-    assign BRANCH_TARGET = PC_ID + {{8{DISP22[21]}}, DISP22, 2'b00};
-
+    reg [31:0] BRANCH_TARGET;
+    
     // CALL displacement: disp30 << 2
-    wire [31:0] CALL_TARGET;
-    assign CALL_TARGET = PC_ID + {DISP30, 2'b00};
+    reg [31:0] CALL_TARGET;
 
     always @(*) begin
+        // Calcular targets
+        BRANCH_TARGET = PC_ID + {{8{DISP22[21]}}, DISP22, 2'b00};
+        CALL_TARGET   = PC_ID + {DISP30, 2'b00};
+        
+        // Seleccionar salida
         if (CALL_ID)
             TAG_OUT = CALL_TARGET;
         else if (BI_ID)
