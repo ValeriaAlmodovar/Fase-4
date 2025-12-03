@@ -6,7 +6,8 @@ module EX_MEM (
     input  wire       E_in,
     input  wire [1:0] SIZE_in,
     input  wire       RF_LE_in,
-    input  wire       L_in,    
+    input  wire       L_in,
+    input  wire       SE_in,    
     input  wire [4:0] RD_in,   
 
     output reg        RW_out,
@@ -14,6 +15,7 @@ module EX_MEM (
     output reg [1:0]  SIZE_out,
     output reg        RF_LE_out,
     output reg        L_out,
+    output reg        SE_out,
     output reg [4:0]  RD_out  
 );
 
@@ -24,6 +26,7 @@ module EX_MEM (
             SIZE_out  <= 2'b00;
             RF_LE_out <= 1'b0;
             L_out     <= 1'b0;
+            SE_out    <= 1'b0;
             RD_out    <= 5'd0;
         end else begin
             RW_out    <= RW_in;
@@ -31,6 +34,7 @@ module EX_MEM (
             SIZE_out  <= SIZE_in;
             RF_LE_out <= RF_LE_in;
             L_out     <= L_in;
+            SE_out    <= SE_in;
             RD_out    <= RD_in;
         end
     end

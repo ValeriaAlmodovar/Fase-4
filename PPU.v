@@ -107,6 +107,7 @@ ControlUnit CU (
     .RW     (RW_ID),
     .E      (E_ID),
     .SIZE   (SIZE_ID),
+    .SE     (SE_ID),
     .CC_WE  (CC_WE_ID),
     .USE_CC (USE_CC_ID),
     .J_L    (J_L_ID),
@@ -422,15 +423,13 @@ end
 //  MEM — DATA RAM
 // =============================================================
 wire [31:0] DO_MEM;
-
 RAM dataram (
     .A    (ALU_OUT_MEM[8:0]),
     .DI   (B_MEM),
     .Size (SIZE_MEM),
     .RW   (RW_MEM),
     .E    (E_MEM),
-    .SE   (1'b0),
-    .clk  (clk),
+    .SE   (SE_MEM),
     .DO   (DO_MEM)
 );
 
