@@ -8,7 +8,7 @@ module PPU_tb;
     //  1 = testcode_sparc1
     //  2 = testcode_sparc2
     // ============================================
-    localparam integer TEST = 0;  // <-- CAMBIAS ESTO ENTRE 0,1,2
+    localparam integer TEST = 2;  // <-- CAMBIAS ESTO ENTRE 0,1,2
 
     reg clk;
     reg reset;

@@ -20,6 +20,7 @@ module ID_EX (
     input  wire [2:0]  ID_SR_in,
     input  wire        B_in,
     input  wire        L_in,
+    input  wire        SE_in,
     input  wire [4:0]  RD_in,      // <- destino en ID
 
     // Outputs (control + destino)
@@ -36,6 +37,7 @@ module ID_EX (
     output reg  [2:0]  ID_SR_out,
     output reg         B_out,
     output reg         L_out,
+    output reg         SE_out,
     output reg  [4:0]  RD_out      // <- destino en EX
 );
 
@@ -54,6 +56,7 @@ module ID_EX (
             ID_SR_out  <= 3'd0;
             B_out      <= 1'b0;
             L_out      <= 1'b0;
+            SE_out     <= 1'b0;
             RD_out     <= 5'd0;   // <- en burbuja, destino = 0
         end
         else begin
@@ -70,6 +73,7 @@ module ID_EX (
             ID_SR_out  <= ID_SR_in;
             B_out      <= B_in;
             L_out      <= L_in;
+            SE_out     <= SE_in;
             RD_out     <= RD_in;  // <- pasar RD_ID a EX correctamente
         end
     end
