@@ -17,32 +17,36 @@ module PPU (
 // =============================================================
 //  PC / nPC   
 // =============================================================
-wire [31:0] pc_q, pc_d;
-wire [31:0] npc_q, npc_d;
+wire [31:0] pc_q;
+reg  [31:0] pc_d;
+wire [31:0] npc_q;
+reg  [31:0] npc_d;
 
 wire [1:0]  nPC_sel;
 reg  [31:0] mux_pc_out;
 
-wire [31:0] mux_pc_in0 = npc_q;   // secuencial
-wire [31:0] mux_pc_in1;           // TAG (branch/call)
-wire [31:0] mux_pc_in2;           // ALU_OUT_EX (jmpl)
-
-always @(*) begin
-    case (nPC_sel)
-        2'b00: mux_pc_out = mux_pc_in0;
-        2'b01: mux_pc_out = mux_pc_in1;
-        2'b10: mux_pc_out = mux_pc_in2;
-        default: mux_pc_out = mux_pc_in0;
-    endcase
-end
+reg  [31:0] mux_pc_in0;   // secuencial
+reg  [31:0] mux_pc_in1;   // TAG (branch/call)
+reg  [31:0] mux_pc_in2;   // ALU_OUT_EX (jmpl)
 
 // Hazard stall
 wire stall_F;
 wire stall_D;
 wire flush_E;
 
-assign pc_d  = mux_pc_out;
-assign npc_d = mux_pc_out + 32'd4;
+always @(*) begin
+    mux_pc_in0 = npc_q;
+    
+    case (nPC_sel)
+        2'b00: mux_pc_out = mux_pc_in0;
+        2'b01: mux_pc_out = mux_pc_in1;
+        2'b10: mux_pc_out = mux_pc_in2;
+        default: mux_pc_out = mux_pc_in0;
+    endcase
+    
+    pc_d  = mux_pc_out;
+    npc_d = mux_pc_out + 32'd4;
+end
 
 pc_reg u_pc (
     .clk  (clk),
@@ -60,7 +64,11 @@ npc_reg u_npc (
     .q    (npc_q)
 );
 
-assign PC_IF = pc_q;
+reg [31:0] PC_IF_reg;
+always @(*) begin
+    PC_IF_reg = pc_q;
+end
+assign PC_IF = PC_IF_reg;
 
 // =============================================================
 //  Instruction Memory
@@ -133,7 +141,6 @@ wire [4:0] RB_ID = I_ID[4:0];
 
 wire [31:0] PA_ID, PB_ID, PD_ID;
 wire        RF_LE_WB;
-wire [31:0] PW_WB;
 wire [4:0]  RD_WB;
 
 register_file RF (
@@ -151,11 +158,19 @@ register_file RF (
 );
 
 // Debug registers
-assign R5  = RF.reg_out[5];
-assign R6  = RF.reg_out[6];
-assign R16 = RF.reg_out[16];
-assign R17 = RF.reg_out[17];
-assign R18 = RF.reg_out[18];
+reg [31:0] R5_reg, R6_reg, R16_reg, R17_reg, R18_reg;
+always @(*) begin
+    R5_reg  = RF.reg_out[5];
+    R6_reg  = RF.reg_out[6];
+    R16_reg = RF.reg_out[16];
+    R17_reg = RF.reg_out[17];
+    R18_reg = RF.reg_out[18];
+end
+assign R5  = R5_reg;
+assign R6  = R6_reg;
+assign R16 = R16_reg;
+assign R17 = R17_reg;
+assign R18 = R18_reg;
 
 // =============================================================
 //  SOH 
@@ -189,7 +204,9 @@ TAG tag_block (
     .TAG_OUT(TAG_OUT_ID)
 );
 
-assign mux_pc_in1 = TAG_OUT_ID;
+always @(*) begin
+    mux_pc_in1 = TAG_OUT_ID;
+end
 
 // =============================================================
 //  RESET HANDLER
@@ -337,7 +354,6 @@ fowarding_unit DUHU (
 //  ALU
 // =============================================================
 wire [31:0] ALU_RES_EX;
-wire [31:0] ALU_OUT_EX;
 wire Z_EX, N_EX, C_EX, V_EX;
 
 ALU alu (
@@ -352,9 +368,11 @@ ALU alu (
     .V   (V_EX)
 );
 
-assign ALU_OUT_EX = (CALL_EX) ? (PC_EX + 32'd8) : ALU_RES_EX;
-
-assign mux_pc_in2 = ALU_OUT_EX;
+reg [31:0] ALU_OUT_EX;
+always @(*) begin
+    ALU_OUT_EX = (CALL_EX) ? (PC_EX + 32'd8) : ALU_RES_EX;
+    mux_pc_in2 = ALU_OUT_EX;
+end
 
 // =============================================================
 //  REG_CC
@@ -469,7 +487,10 @@ MEM_WB memwb (
 // =============================================================
 //  MUX WB
 // =============================================================
-assign PW_WB = (L_WB) ? MEM_WB_DATA : ALU_WB;
+reg [31:0] PW_WB;
+always @(*) begin
+    PW_WB = (L_WB) ? MEM_WB_DATA : ALU_WB;
+end
 
 // =============================================================
 // DEBUG MONITOR (temporary for debugging)
