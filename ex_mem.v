@@ -37,6 +37,13 @@ module EX_MEM (
             SE_out    <= SE_in;
             RD_out    <= RD_in;
         end
+
+        // ===== DEBUG: EX/MEM =====
+        /*if (L_out) begin
+            $display("EXMEM> SE_MEM=%b SIZE_MEM=%b RW_MEM=%b L_MEM=%b RD_MEM=%d",
+             SE_out, SIZE_out, RW_out, L_out, RD_out);
+        end*/
+
     end
 
 endmodule

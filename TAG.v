@@ -28,6 +28,10 @@ module TAG (
             TAG_OUT = BRANCH_TARGET;
         else
             TAG_OUT = 32'd0;   // no usada en secuencial
+        // ===== DEBUG: TAG =====
+        /*$display("TAG> PC=%d DISP22=%h BR_TARGET=%h CALL_TARGET=%h BI=%b CALL=%b",
+         PC_ID, DISP22, BRANCH_TARGET, CALL_TARGET, BI_ID, CALL_ID);*/
+
     end
 
 endmodule

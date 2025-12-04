@@ -99,6 +99,7 @@ wire       RW_ID, E_ID, CC_WE_ID, USE_CC_ID;
 wire [1:0] SIZE_ID;
 wire       J_L_ID, CALL_ID, RF_LE_ID, B_ID, L_ID;
 wire [2:0] ID_SR_ID;
+wire       SE_ID;
 
 ControlUnit CU (
     .I      (I_ID),
@@ -213,6 +214,7 @@ wire [1:0] SIZE_EX;
 wire       J_L_EX, CALL_EX, RF_LE_EX, B_EX, L_EX;
 wire [2:0] ID_SR_EX;
 wire [4:0] RD_EX;
+wire       SE_EX;
 
 wire flush_ID_EX = flush_E | IF_ID_flush;
 
@@ -236,6 +238,7 @@ ID_EX idex (
     .B_in       (B_ID),
     .L_in       (L_ID),
     .RD_in      (RD_ID),
+    .SE_in      (SE_ID),
 
     // output control
     .SOH_OP_out (SOH_OP_EX),
@@ -251,7 +254,8 @@ ID_EX idex (
     .ID_SR_out  (ID_SR_EX),
     .B_out      (B_EX),
     .L_out      (L_EX),
-    .RD_out     (RD_EX)
+    .RD_out     (RD_EX),
+    .SE_out     (SE_EX)
 );
 
 
@@ -389,6 +393,7 @@ CH ch_unit (
 wire [1:0] SIZE_MEM;
 wire       RW_MEM, E_MEM;
 wire       L_MEM;
+wire       SE_MEM;
 
 EX_MEM exmem (
     .clk       (clk),
@@ -404,7 +409,9 @@ EX_MEM exmem (
     .RF_LE_out (RF_LE_MEM),
     .L_out     (L_MEM),
     .RD_in     (RD_EX),
-    .RD_out    (RD_MEM)
+    .RD_out    (RD_MEM),
+    .SE_in     (SE_EX),
+    .SE_out    (SE_MEM)
 );
 
 reg [31:0] ALU_OUT_MEM, B_MEM;

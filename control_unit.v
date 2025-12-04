@@ -17,7 +17,7 @@ module ControlUnit (
     output reg  [2:0] ID_SR,
     output reg        B,
     output reg        L,
-    output reg        SE        
+    output reg        SE
 );
 
     wire [1:0] op  = I[31:30];
@@ -54,17 +54,16 @@ module ControlUnit (
         //   BRANCH / SETHI
         //======================================================
         else if (op == 2'b00) begin
-            // BRANCH
+
             if (op2 == 3'b010) begin
                 B      = 1'b1;
                 USE_CC = 1'b1;
             end
 
-            // SETHI
             else if (op2 == 3'b100) begin
                 RF_LE  = 1'b1;
-                SOH_OP = 4'b0010;  // imm22<<10
-                ALU_OP = 4'b1101;  // pass-through A
+                SOH_OP = 4'b0010;
+                ALU_OP = 4'b1101;
             end
         end
 
@@ -72,16 +71,14 @@ module ControlUnit (
         //   ALU / JMPL
         //======================================================
         else if (op == 2'b10) begin
-            // immediate or register
+
             SOH_OP = i_bit ? 4'b0001 : 4'b0000;
 
-            // JMPL
             if (op3 == 6'b111000) begin
                 J_L   = 1'b1;
                 RF_LE = 1'b1;
             end
 
-            // ALU
             else begin
                 RF_LE = 1'b1;
                 L     = 1'b0;
@@ -91,7 +88,7 @@ module ControlUnit (
                     6'b010000: begin ALU_OP = 4'b0000; CC_WE = 1'b1; end // addcc
                     6'b000100: begin ALU_OP = 4'b0010; CC_WE = 1'b0; end // sub
                     6'b010100: begin ALU_OP = 4'b0010; CC_WE = 1'b1; end // subcc
-                    default: RF_LE = 1'b0;
+                    default:    RF_LE = 1'b0;
                 endcase
             end
         end
@@ -100,50 +97,40 @@ module ControlUnit (
         //   LOAD / STORE
         //======================================================
         else if (op == 2'b11) begin
+
             SOH_OP = i_bit ? 4'b0001 : 4'b0000;
 
-            // ------ LOADS ------
             case (op3)
-                6'b000001: begin
-                    // ldub
-                    RW=0; E=1; RF_LE=1; L=1;
-                    SIZE=2'b00; SE=0;
-                end
-                6'b001001: begin
-                    // ldsb
-                    RW=0; E=1; RF_LE=1; L=1;
-                    SIZE=2'b00; SE=1;
-                end
-                6'b000010: begin
-                    // lduh
-                    RW=0; E=1; RF_LE=1; L=1;
-                    SIZE=2'b01; SE=0;
-                end
-                6'b001010: begin
-                    // ldsh
-                    RW=0; E=1; RF_LE=1; L=1;
-                    SIZE=2'b01; SE=1;
-                end
-                6'b000000: begin
-                    // ld (word)
-                    RW=0; E=1; RF_LE=1; L=1;
-                    SIZE=2'b10; SE=0;
-                end
 
-                // ------ STORES ------
-                6'b000101: begin 
-                    // stb
-                    RW=1; E=1; SIZE=2'b00; 
-                end
-                6'b000110: begin
-                    // sth
-                    RW=1; E=1; SIZE=2'b01;
-                end
-                6'b000100: begin
-                    // st (word)
-                    RW=1; E=1; SIZE=2'b10;
-                end
+                // ---------------- LOADS ----------------
+                6'b000001: begin RW=0; E=1; RF_LE=1; L=1; SIZE=2'b00; SE=0; end // ldub
+                6'b001001: begin RW=0; E=1; RF_LE=1; L=1; SIZE=2'b00; SE=1; end // ldsb
+                6'b000010: begin RW=0; E=1; RF_LE=1; L=1; SIZE=2'b01; SE=0; end // lduh
+                6'b001010: begin RW=0; E=1; RF_LE=1; L=1; SIZE=2'b01; SE=1; end // ldsh
+                6'b000000: begin RW=0; E=1; RF_LE=1; L=1; SIZE=2'b10; SE=0; end // ld word
+
+                // ---------------- STORES ----------------
+                6'b000101: begin RW=1; E=1; RF_LE=0; L=0; SIZE=2'b00; end // stb
+                6'b000110: begin RW=1; E=1; RF_LE=0; L=0; SIZE=2'b01; end // sth
+                6'b000100: begin RW=1; E=1; RF_LE=0; L=0; SIZE=2'b10; end // st word
+
             endcase
         end
+
+        //======================================================
+        //   DEBUG OUTPUT
+        //======================================================
+        /*if (op == 2'b11) begin
+            $display("CU> op3=%b RW=%b L(load?)=%b SE=%b SIZE=%b I=%h",
+                op3, RW, L, SE, SIZE, I);
+        end
+
+        if (op == 2'b00 && op2 == 3'b010) begin
+            $display("CU> BRANCH cond=%b", I[28:25]);
+        end
+
+        if (op == 2'b10 && op3 == 6'b111000) begin
+            $display("CU> JMPL detected");
+        end*/
     end
 endmodule

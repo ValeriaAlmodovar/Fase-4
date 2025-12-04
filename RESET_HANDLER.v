@@ -40,5 +40,9 @@ module reset_handler (
             nPC_sel = 2'b10;
             IF_ID_R = 1'b1;   // flush
         end
+    // ===== DEBUG: RESET HANDLER =====
+    /*$display("RH> nPC_sel=%b R=%b CALL=%b J=%b BI=%b J_L=%b",
+         nPC_sel, R, CALL, J, BI, J_L);*/
+
     end
 endmodule

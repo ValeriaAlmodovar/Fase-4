@@ -76,6 +76,13 @@ module ID_EX (
             SE_out     <= SE_in;
             RD_out     <= RD_in;  // <- pasar RD_ID a EX correctamente
         end
+
+        // ===== DEBUG: ID/EX =====
+        /*if (L_out) begin
+            $display("IDEX> SE_EX=%b SIZE_EX=%b RW_EX=%b L_EX=%b RD_EX=%d", 
+             SE_out, SIZE_out, RW_out, L_out, RD_out);
+        end*/
+
     end
 
 endmodule

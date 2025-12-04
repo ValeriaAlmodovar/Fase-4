@@ -28,6 +28,10 @@ module RAM (
         // LOAD  (RW == 0)
         // -----------------------
         if (E && (RW == 1'b0)) begin
+            // ===== DEBUG: RAM LOAD =====
+            $display("RAM> LOAD A=%0d Size=%b SE=%b b0=%h b1=%h b2=%h b3=%h => DO=%h",
+                    A, Size, SE, b0, b1, b2, b3, DO);
+
             case (Size)
                 // BYTE
                 2'b00: begin
@@ -58,6 +62,10 @@ module RAM (
         // STORE (RW == 1)
         // -----------------------
         else if (E && (RW == 1'b1)) begin
+
+            /*// ===== DEBUG: RAM STORE =====
+            $display("RAM> STORE A=%0d Size=%b DI=%h", A, Size, DI);*/
+
             // DO no importa en store; se pone en 0 para evitar latches
             DO = 32'b0;
 
