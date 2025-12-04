@@ -1,5 +1,5 @@
 //==============================================================
-//  CONTROL UNIT – Versión completa y correcta para tu programa
+//  CONTROL UNIT 
 //==============================================================
 module ControlUnit (
     input  wire [31:0] I,
