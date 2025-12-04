@@ -8,7 +8,7 @@ module PPU_tb;
     //  1 = testcode_sparc1
     //  2 = testcode_sparc2
     // ============================================
-    localparam integer TEST = 2;  // <-- CAMBIAS ESTO ENTRE 0,1,2
+    localparam integer TEST = 0;  // <-- CAMBIAS ESTO ENTRE 0,1,2
 
     reg clk;
     reg reset;
@@ -20,7 +20,7 @@ module PPU_tb;
     wire [31:0] R1, R2, R3, R4, R8, R10, R11, R12, R15;
 
     // ============================
-    //  CONECTAR TU PPU
+    //  CONECTAR  PPU
     // ============================
     PPU uut (
         .clk   (clk),
