@@ -214,8 +214,8 @@ end
 reset_handler RH (
     .R       (reset),
     .CALL    (CALL_ID),
-    .J       (1'b0),
-    .BI      (B_ID & BR_TAKEN_ID),
+    .J       (BR_TAKEN_ID),     // branch tomado desde CH
+    .BI      (B_ID),             // hay branch instruction
     .J_L     (J_L_ID),
     .a_bit   (I_ID[29]),
     .nPC_sel (nPC_sel),

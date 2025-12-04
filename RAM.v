@@ -36,14 +36,14 @@ module RAM (
                 // BYTE
                 2'b00: begin
                     // SE=1 → signed byte, SE=0 → unsigned byte
-                    DO = SE ? $signed({b0}) 
+                    DO = SE ? $signed({{24{b0[7]}}, b0}) 
                             : {24'b0, b0};
                 end
 
                 // HALFWORD (big-endian: {b0,b1})
                 2'b01: begin
                     // SE=1 → signed halfword, SE=0 → unsigned halfword
-                    DO = SE ? $signed({b0, b1})
+                    DO = SE ? $signed({{16{b0[7]}}, b0, b1})
                             : {16'b0, b0, b1};
                 end
 
