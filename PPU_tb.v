@@ -8,7 +8,7 @@ module PPU_tb;
     //  1 = testcode_sparc1
     //  2 = testcode_sparc2
     // ============================================
-    localparam integer TEST = 0;  // <-- CAMBIAS ESTO ENTRE 0,1,2
+    localparam integer TEST = 2;  // <-- CAMBIAS ESTO ENTRE 0,1,2
 
     reg clk;
     reg reset;
@@ -101,6 +101,32 @@ module PPU_tb;
     // MONITOR + REQUISITOS POR PROGRAMA
     // ============================
     integer i;
+
+    // ============================
+    // DEBUG  
+    // ============================
+    /*
+    always @(posedge clk) begin
+        $display("DEBUG: t=%0t | PC_IF=%0d | RA_EX=r%0d RB_EX=r%0d | RD_MEM=r%0d RD_WB=r%0d | fwdA=%b fwdB=%b | ALU_A=%0d ALU_B=%0d",
+                 $time, PC_IF, uut.RA_EX, uut.RB_EX, uut.RD_MEM, uut.RD_WB, 
+                 uut.fwdA_sel, uut.fwdB_sel, $signed(uut.ALU_A), $signed(uut.ALU_B));
+        
+        if (uut.CC_WE_EX) begin
+            $display("  --> CC_UPDATE | Z=%b N=%b C=%b V=%b | Result=%0d",
+                     uut.Z_EX, uut.N_EX, uut.C_EX, uut.V_EX, $signed(uut.ALU_OUT_EX));
+        end
+        
+        if (uut.B_ID) begin
+            $display("  --> BRANCH | cond=%b | Z_CC=%b N_CC=%b C_CC=%b V_CC=%b | BR_TAKEN=%b",
+                     uut.COND_ID, uut.Z_CC, uut.N_CC, uut.C_CC, uut.V_CC, uut.BR_TAKEN_ID);
+        end
+        
+        if (uut.stall_F || uut.stall_D || uut.flush_E) begin
+            $display("  --> STALL | L_EX=%b RD_EX=r%0d RA_ID=r%0d RB_ID=r%0d",
+                     uut.L_EX, uut.RD_EX, uut.RA_ID, uut.RB_ID);
+        end
+    end
+    */
 
     initial begin
         case (TEST)

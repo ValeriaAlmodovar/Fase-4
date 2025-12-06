@@ -9,12 +9,12 @@ module register_file (
     input  [4:0] RW,            // write register
     input  [4:0] RA,            // read port A
     input  [4:0] RB,            // read port B
-    input  [4:0] RD,            // read port D (third read)
+    input  [4:0] RD,            // read port D 
     input  [31:0] PW,           // write data
 
-    output [31:0] PA,           // output A
-    output [31:0] PB,           // output B
-    output [31:0] PD            // output D
+    output reg [31:0] PA,       // output A
+    output reg [31:0] PB,       // output B
+    output reg [31:0] PD        // output D
 );
 
     //===========================================
@@ -52,8 +52,10 @@ module register_file (
     endgenerate
 
     //===========================================
-    //  MUX A
+    //  READ PORTS with internal forwarding
     //===========================================
+    wire [31:0] PA_raw, PB_raw, PD_raw;
+    
     mux32to1 MUXA (
         .D0 (reg_out[0]),  .D1 (reg_out[1]),  .D2 (reg_out[2]),  .D3 (reg_out[3]),
         .D4 (reg_out[4]),  .D5 (reg_out[5]),  .D6 (reg_out[6]),  .D7 (reg_out[7]),
@@ -64,12 +66,9 @@ module register_file (
         .D24(reg_out[24]), .D25(reg_out[25]), .D26(reg_out[26]), .D27(reg_out[27]),
         .D28(reg_out[28]), .D29(reg_out[29]), .D30(reg_out[30]), .D31(reg_out[31]),
         .S(RA),
-        .Y(PA)
+        .Y(PA_raw)
     );
 
-    //===========================================
-    //  MUX B
-    //===========================================
     mux32to1 MUXB (
         .D0 (reg_out[0]),  .D1 (reg_out[1]),  .D2 (reg_out[2]),  .D3 (reg_out[3]),
         .D4 (reg_out[4]),  .D5 (reg_out[5]),  .D6 (reg_out[6]),  .D7 (reg_out[7]),
@@ -80,12 +79,9 @@ module register_file (
         .D24(reg_out[24]), .D25(reg_out[25]), .D26(reg_out[26]), .D27(reg_out[27]),
         .D28(reg_out[28]), .D29(reg_out[29]), .D30(reg_out[30]), .D31(reg_out[31]),
         .S(RB),
-        .Y(PB)
+        .Y(PB_raw)
     );
 
-    //===========================================
-    //  MUX D
-    //===========================================
     mux32to1 MUXD (
         .D0 (reg_out[0]),  .D1 (reg_out[1]),  .D2 (reg_out[2]),  .D3 (reg_out[3]),
         .D4 (reg_out[4]),  .D5 (reg_out[5]),  .D6 (reg_out[6]),  .D7 (reg_out[7]),
@@ -96,7 +92,14 @@ module register_file (
         .D24(reg_out[24]), .D25(reg_out[25]), .D26(reg_out[26]), .D27(reg_out[27]),
         .D28(reg_out[28]), .D29(reg_out[29]), .D30(reg_out[30]), .D31(reg_out[31]),
         .S(RD),
-        .Y(PD)
+        .Y(PD_raw)
     );
+    
+    // Internal forwarding: if writing and reading same register, forward write data
+    always @(*) begin
+        PA = (LE && (RW != 5'd0) && (RW == RA)) ? PW : PA_raw;
+        PB = (LE && (RW != 5'd0) && (RW == RB)) ? PW : PB_raw;
+        PD = (LE && (RW != 5'd0) && (RW == RD)) ? PW : PD_raw;
+    end
 
 endmodule
