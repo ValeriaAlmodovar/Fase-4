@@ -8,7 +8,7 @@ module PPU_tb;
     //  1 = testcode_sparc1
     //  2 = testcode_sparc2
     // ============================================
-    localparam integer TEST = 2;  // <-- CAMBIAS ESTO ENTRE 0,1,2
+    localparam integer TEST = 0;  // <-- CAMBIAS ESTO ENTRE 0,1,2
 
     reg clk;
     reg reset;
@@ -70,18 +70,18 @@ module PPU_tb;
         case (TEST)
             0: begin
                 $display(">>> Cargando debugging_code_SPARC.txt");
-                $readmemh("debugging_code_SPARC.txt", uut.instr_mem.MEM);
-                $readmemh("debugging_code_SPARC.txt", uut.dataram.Mem);
+                $readmemb("debugging_code_SPARC.txt", uut.instr_mem.MEM);
+                $readmemb("debugging_code_SPARC.txt", uut.dataram.Mem);
             end
             1: begin
                 $display(">>> Cargando testcode_sparc1.txt");
-                $readmemh("testcode_sparc1.txt", uut.instr_mem.MEM);
-                $readmemh("testcode_sparc1.txt", uut.dataram.Mem);
+                $readmemb("testcode_sparc1.txt", uut.instr_mem.MEM);
+                $readmemb("testcode_sparc1.txt", uut.dataram.Mem);
             end
             2: begin
                 $display(">>> Cargando testcode_sparc2.txt");
-                $readmemh("testcode_sparc2.txt", uut.instr_mem.MEM);
-                $readmemh("testcode_sparc2.txt", uut.dataram.Mem);
+                $readmemb("testcode_sparc2.txt", uut.instr_mem.MEM);
+                $readmemb("testcode_sparc2.txt", uut.dataram.Mem);
             end
             default: begin
                 $display("ERROR: TEST invalido");

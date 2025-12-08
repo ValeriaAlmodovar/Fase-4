@@ -137,7 +137,10 @@ wire [4:0] RD_ID =
                            I_ID[29:25];
 
 wire [4:0] RA_ID = I_ID[18:14];
-wire [4:0] RB_ID = I_ID[4:0];
+
+// RB_ID: Para stores, necesitamos rd (dato a escribir), no rs2
+// op_format=11 (3) y RW=1 indica store
+wire [4:0] RB_ID = (op_format == 2'b11 && RW_ID) ? I_ID[29:25] : I_ID[4:0];
 
 wire [31:0] PA_ID, PB_ID, PD_ID;
 wire        RF_LE_WB;
@@ -305,14 +308,16 @@ end
 //  HAZARD UNIT
 // =============================================================
 hazard_unit HZU (
-    .L_EX     (L_EX),
-    .RF_LE_EX (RF_LE_EX),
-    .RD_EX    (RD_EX),
-    .RA_ID    (RA_ID),
-    .RB_ID    (RB_ID),
-    .stall_F  (stall_F),
-    .stall_D  (stall_D),
-    .flush_E  (flush_E)
+    .L_EX      (L_EX),
+    .RF_LE_EX  (RF_LE_EX),
+    .RD_EX     (RD_EX),
+    .RA_ID     (RA_ID),
+    .RB_ID     (RB_ID),
+    .CC_WE_EX  (CC_WE_EX),
+    .USE_CC_ID (USE_CC_ID),
+    .stall_F   (stall_F),
+    .stall_D   (stall_D),
+    .flush_E   (flush_E)
 );
 
 // =============================================================
@@ -440,7 +445,7 @@ always @(posedge clk) begin
         B_MEM       <= 32'b0;
     end else begin
         ALU_OUT_MEM <= ALU_OUT_EX;
-        B_MEM       <= B_EX_DATA;         
+        B_MEM       <= ALU_B;  // Usar ALU_B que ya tiene forwarding aplicado
     end
 end
 
