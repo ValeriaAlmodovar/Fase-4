@@ -439,13 +439,16 @@ EX_MEM exmem (
 
 reg [31:0] ALU_OUT_MEM, B_MEM;
 
+// Para stores: leer directamente del register file el dato más actualizado
+wire [31:0] STORE_DATA_MEM = RF.reg_out[RD_MEM];
+
 always @(posedge clk) begin
     if (reset) begin
         ALU_OUT_MEM <= 32'b0;
         B_MEM       <= 32'b0;
     end else begin
         ALU_OUT_MEM <= ALU_OUT_EX;
-        B_MEM       <= ALU_B;  // Usar ALU_B que ya tiene forwarding aplicado
+        B_MEM       <= ALU_B;  // Ya no se usa para stores
     end
 end
 
@@ -455,7 +458,7 @@ end
 wire [31:0] DO_MEM;
 RAM dataram (
     .A    (ALU_OUT_MEM[8:0]),
-    .DI   (B_MEM),
+    .DI   (STORE_DATA_MEM),  // Usar dato directo del register file
     .Size (SIZE_MEM),
     .RW   (RW_MEM),
     .E    (E_MEM),
