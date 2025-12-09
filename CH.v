@@ -16,8 +16,8 @@ always @(*) begin
         4'b0010: BR_TAKEN = (Z_CC || (N_CC != V_CC));     // BLE
         4'b1011: BR_TAKEN = (N_CC == V_CC);               // BGE
         4'b0011: BR_TAKEN = (N_CC != V_CC);               // BL
-        4'b1100: BR_TAKEN = (C_CC == 1'b1);               // BGU
-        4'b0100: BR_TAKEN = (C_CC == 1'b0);               // BLEU
+        4'b1100: BR_TAKEN = (~(C_CC | Z_CC));             // BGU
+        4'b0100: BR_TAKEN = (C_CC | Z_CC);               // BLEU
         4'b1101: BR_TAKEN = (C_CC == 1'b0);               // BCC
         4'b0101: BR_TAKEN = (C_CC == 1'b1);               // BCS
         4'b1110: BR_TAKEN = (N_CC == 1'b0);               // BPOS

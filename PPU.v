@@ -362,15 +362,15 @@ wire [31:0] ALU_RES_EX;
 wire Z_EX, N_EX, C_EX, V_EX;
 
 ALU alu (
-    .A   (ALU_A),
-    .B   (ALU_B),
-    .Ci  (1'b0),
-    .OP  (ALU_OP_EX),
-    .OUT (ALU_RES_EX),
-    .Z   (Z_EX),
-    .N   (N_EX),
-    .C   (C_EX),
-    .V   (V_EX)
+    .A       (ALU_A),
+    .B       (ALU_B),
+    .Ci      (1'b0),
+    .ALU_OP  (ALU_OP_EX),
+    .ALU_OUT (ALU_RES_EX),
+    .Z_EX    (Z_EX),
+    .N_EX    (N_EX),
+    .C_EX    (C_EX),
+    .V_EX    (V_EX)
 );
 
 reg [31:0] ALU_OUT_EX;

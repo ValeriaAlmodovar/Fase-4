@@ -55,15 +55,17 @@ module ControlUnit (
         //======================================================
         else if (op == 2'b00) begin
 
+            // BRANCH
             if (op2 == 3'b010) begin
                 B      = 1'b1;
                 USE_CC = 1'b1;
             end
 
+            // SETHI
             else if (op2 == 3'b100) begin
                 RF_LE  = 1'b1;
-                SOH_OP = 4'b0010;
-                ALU_OP = 4'b1101;
+                SOH_OP = 4'b0010; // imm22 << 10
+                ALU_OP = 4'b1101; // PASS A
             end
         end
 
@@ -74,21 +76,63 @@ module ControlUnit (
 
             SOH_OP = i_bit ? 4'b0001 : 4'b0000;
 
+            // JMPL
             if (op3 == 6'b111000) begin
                 J_L   = 1'b1;
                 RF_LE = 1'b1;
             end
 
+            // ALU OPERATIONS
             else begin
                 RF_LE = 1'b1;
                 L     = 1'b0;
 
                 case (op3)
+
+                    //===========================
+                    // ARITHMETIC
+                    //===========================
                     6'b000000: begin ALU_OP = 4'b0000; CC_WE = 1'b0; end // add
                     6'b010000: begin ALU_OP = 4'b0000; CC_WE = 1'b1; end // addcc
+
+                    6'b001000: begin ALU_OP = 4'b1110; CC_WE = 1'b0; end // addx (add with carry)
+                    6'b011000: begin ALU_OP = 4'b1110; CC_WE = 1'b1; end // addxcc
+
                     6'b000100: begin ALU_OP = 4'b0010; CC_WE = 1'b0; end // sub
                     6'b010100: begin ALU_OP = 4'b0010; CC_WE = 1'b1; end // subcc
-                    default:    RF_LE = 1'b0;
+
+                    6'b001100: begin ALU_OP = 4'b1111; CC_WE = 1'b0; end // subx (sub with carry)
+                    6'b011100: begin ALU_OP = 4'b1111; CC_WE = 1'b1; end // subxcc
+
+                    //===========================
+                    // LOGIC INSTRUCTIONS
+                    //===========================
+                    6'b000001: begin ALU_OP = 4'b0100; CC_WE = 1'b0; end // and
+                    6'b010001: begin ALU_OP = 4'b0100; CC_WE = 1'b1; end // andcc
+
+                    6'b000010: begin ALU_OP = 4'b0101; CC_WE = 1'b0; end // or
+                    6'b010010: begin ALU_OP = 4'b0101; CC_WE = 1'b1; end // orcc
+
+                    6'b000011: begin ALU_OP = 4'b0110; CC_WE = 1'b0; end // xor
+                    6'b010011: begin ALU_OP = 4'b0110; CC_WE = 1'b1; end // xorcc
+
+                    6'b000111: begin ALU_OP = 4'b0111; CC_WE = 1'b0; end // xnor
+                    6'b010111: begin ALU_OP = 4'b0111; CC_WE = 1'b1; end // xnorcc
+
+                    6'b000101: begin ALU_OP = 4'b1000; CC_WE = 1'b0; end // andn
+                    6'b010101: begin ALU_OP = 4'b1000; CC_WE = 1'b1; end // andncc
+
+                    6'b000110: begin ALU_OP = 4'b1001; CC_WE = 1'b0; end // orn
+                    6'b010110: begin ALU_OP = 4'b1001; CC_WE = 1'b1; end // orncc
+
+                    //===========================
+                    // SHIFT INSTRUCTIONS
+                    //===========================
+                    6'b100101: begin ALU_OP = 4'b1010; ID_SR = 3'b001; end // sll
+                    6'b100110: begin ALU_OP = 4'b1011; ID_SR = 3'b001; end // srl
+                    6'b100111: begin ALU_OP = 4'b1100; ID_SR = 3'b001; end // sra
+
+                    default: RF_LE = 1'b0;
                 endcase
             end
         end

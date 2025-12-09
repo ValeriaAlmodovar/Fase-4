@@ -5,7 +5,7 @@ module PPU_tb;
     // ============================================
     //  Selector de prueba
     // ============================================
-    localparam integer TEST = 1;
+    localparam integer TEST = 0;
 
     reg clk;
     reg reset;
