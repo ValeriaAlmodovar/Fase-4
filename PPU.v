@@ -441,7 +441,7 @@ EX_MEM exmem (
 reg [31:0] ALU_OUT_MEM, B_MEM;
 
 // Para stores: leer directamente del register file el dato más actualizado
-wire [31:0] STORE_DATA_MEM = RF.reg_out[RD_MEM];
+wire [31:0] STORE_DATA_MEM = B_MEM;
 
 always @(posedge clk) begin
     if (reset) begin
