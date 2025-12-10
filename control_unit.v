@@ -165,8 +165,8 @@ module ControlUnit (
         //   DEBUG OUTPUT
         //======================================================
         /*if (op == 2'b11) begin
-            $display("CU> op3=%b RW=%b L(load?)=%b SE=%b SIZE=%b I=%h",
-                op3, RW, L, SE, SIZE, I);
+            $display("CU> LOAD/STORE op3=%b RW=%b L=%b RF_LE=%b SE=%b SIZE=%b",
+                op3, RW, L, RF_LE, SE, SIZE);
         end
 
         if (op == 2'b00 && op2 == 3'b010) begin

@@ -27,8 +27,10 @@ always @(*) begin
         default: BR_TAKEN = 1'b0;
     endcase
 
-    /*$display("CH> cond=%b Z=%b N=%b C=%b V=%b => TAKE=%b",
-              cond, Z_CC, N_CC, C_CC, V_CC, BR_TAKEN);*/
+    // Debug: mostrar branches tomados/no tomados en el rango de PC de interés
+    /*if (cond != 4'b1000)  // No mostrar BA (always)
+        $display("CH> PC~%0d cond=%b Z=%b N=%b C=%b V=%b => TAKE=%b",
+                  0, cond, Z_CC, N_CC, C_CC, V_CC, BR_TAKEN);*/
 end
 
 endmodule

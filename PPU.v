@@ -351,6 +351,7 @@ fowarding_unit DUHU (
     .RD_WB     (RD_WB),
     .RF_LE_MEM (RF_LE_MEM),
     .RF_LE_WB  (RF_LE_WB),
+    .SOH_OP_EX (SOH_OP_EX),
     .sel_A     (fwdA_sel),
     .sel_B     (fwdB_sel)
 );
@@ -504,10 +505,8 @@ end
 // DEBUG MONITOR (temporary for debugging)
 // =============================================================
 // always @(posedge clk) begin
-//     $display("DBG t=%0t | PC=%0d | I_ID=%h | RF_LE_ID=%b | RF_LE_EX=%b | RF_LE_MEM=%b | RF_LE_WB=%b | RD_ID=%0d | RD_EX=%0d | RD_MEM=%0d | RD_WB=%0d | PW_WB=%h",
-//              $time, PC_ID, I_ID,
-//              RF_LE_ID, RF_LE_EX, RF_LE_MEM, RF_LE_WB,
-//              RD_ID, RD_EX, RD_MEM, RD_WB, PW_WB);
+//     if (RF_LE_WB && (RD_WB == 17 || RD_WB == 18))
+//         $display("DBG t=%0t | PC_IF=%0d | Writing R%0d=%0d", $time, PC_IF, RD_WB, PW_WB);
 // end
 
 // always @(posedge clk) begin

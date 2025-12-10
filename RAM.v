@@ -29,8 +29,8 @@ module RAM (
         // -----------------------
         if (E && (RW == 1'b0)) begin
             // ===== DEBUG: RAM LOAD =====
-            $display("RAM> LOAD A=%0d Size=%b SE=%b b0=%h b1=%h b2=%h b3=%h => DO=%h",
-                    A, Size, SE, b0, b1, b2, b3, DO);
+            //$display("RAM> LOAD A=%0d Size=%b SE=%b b0=%h => DO will be calculated",
+            //        A, Size, SE, b0);
 
             case (Size)
                 // BYTE
@@ -63,8 +63,9 @@ module RAM (
         // -----------------------
         else if (E && (RW == 1'b1)) begin
 
-            /*// ===== DEBUG: RAM STORE =====
-            $display("RAM> STORE A=%0d Size=%b DI=%h", A, Size, DI);*/
+            // ===== DEBUG: RAM STORE =====
+            if (A >= 224 && A <= 260)
+                $display("RAM> STORE A=%0d Size=%b DI=%h (%b)", A, Size, DI, DI);
 
             // DO no importa en store; se pone en 0 para evitar latches
             DO = 32'b0;

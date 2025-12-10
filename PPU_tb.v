@@ -5,7 +5,7 @@ module PPU_tb;
     // ============================================
     //  Selector de prueba
     // ============================================
-    localparam integer TEST = 0;
+    localparam integer TEST = 2;
 
     reg clk;
     reg reset;
@@ -83,12 +83,12 @@ module PPU_tb;
 
     reg [31:0] last_PC;
 
-    initial last_PC = 32'hFFFFFFFF;
+    initial begin
+        last_PC = 32'hFFFFFFFF;
+    end
 
     always @(posedge clk) begin
         if (!reset && PC_IF != last_PC) begin
-            last_PC = PC_IF;
-
             case (TEST)
                 0: begin
                     $display("PC=%0d | R5=%0d | R6=%0d | R16=%0d | R17=%0d | R18=%0d",
@@ -101,10 +101,11 @@ module PPU_tb;
                 end
 
                 2: begin
-                    $display("PC=%0d | R1=%0d | R2=%0d | R3=%0d | R4=%0d | R5=%0d | R8=%0d | R10=%0d | R11=%0d | R12=%0d | R15=%0d",
+                    $display("PC=%0d | R1=%0d | R2=%0d | R3=%0d | R4=%0d | R5=%b | R8=%0d | R10=%0d | R11=%0d | R12=%0d | R15=%0d",
                              PC_IF, R1, R2, R3, R4, R5, R8, R10, R11, R12, R15);
                 end
             endcase
+            last_PC <= PC_IF;
         end
     end
 
