@@ -376,7 +376,7 @@ ALU alu (
 
 reg [31:0] ALU_OUT_EX;
 always @(*) begin
-    ALU_OUT_EX = (CALL_EX) ? (PC_EX + 32'd8) : ALU_RES_EX;
+    ALU_OUT_EX = (CALL_EX) ? PC_EX : ALU_RES_EX;
     mux_pc_in2 = ALU_OUT_EX;
 end
 

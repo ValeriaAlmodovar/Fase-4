@@ -5,7 +5,7 @@ module PPU_tb;
     // ============================================
     //  Selector de prueba
     // ============================================
-    localparam integer TEST = 2;
+    localparam integer TEST = 0;
 
     reg clk;
     reg reset;
@@ -123,7 +123,7 @@ module PPU_tb;
             end
 
             1: begin
-                #160;
+                #220;
                 $display("Address 44: %b %b %b %b",
                          uut.dataram.Mem[44],
                          uut.dataram.Mem[45],
