@@ -138,8 +138,7 @@ wire [4:0] RD_ID =
 
 wire [4:0] RA_ID = I_ID[18:14];
 
-// RB_ID: Para stores, necesitamos rd (dato a escribir), no rs2
-// op_format=11 (3) y RW=1 indica store
+// RB_ID: Para stores, necesitamos rd (dato a escribir)
 wire [4:0] RB_ID = (op_format == 2'b11 && RW_ID) ? I_ID[29:25] : I_ID[4:0];
 
 wire [31:0] PA_ID, PB_ID, PD_ID;
@@ -282,7 +281,7 @@ ID_EX idex (
 // =============================================================
 //  ID → EX DATAPATH
 // =============================================================
-reg [31:0] A_EX, B_EX_DATA;
+reg [31:0] A_EX, B_EX_DATA, PB_EX;  // PB_EX = valor de RB (para stores)
 reg [4:0]  RA_EX, RB_EX;
 reg [31:0] PC_EX;
 
@@ -290,12 +289,14 @@ always @(posedge clk) begin
     if (reset || flush_ID_EX) begin
         A_EX      <= 32'b0;
         B_EX_DATA <= 32'b0;
+        PB_EX     <= 32'b0;
         RA_EX     <= 5'd0;
         RB_EX     <= 5'd0;
         PC_EX     <= 32'b0;
     end else if (!stall_D) begin
         A_EX      <= PA_ID;
         B_EX_DATA <= SOH_OUT_ID;
+        PB_EX     <= PB_ID;  // Guardar valor del registro B 
         RA_EX     <= RA_ID;
         RB_EX     <= RB_ID;
         PC_EX     <= PC_ID;
@@ -325,6 +326,7 @@ hazard_unit HZU (
 // =============================================================
 wire [1:0] fwdA_sel, fwdB_sel;
 reg  [31:0] ALU_A, ALU_B;
+reg  [31:0] STORE_DATA_EX;  // Valor de RB para stores (con forwarding)
 wire        RF_LE_MEM;
 wire  [4:0]  RD_MEM;   // <--- 5-bit reg, only declared ONCE
 
@@ -341,6 +343,14 @@ always @(*) begin
         2'b01: ALU_B = ALU_OUT_MEM;
         2'b10: ALU_B = PW_WB;
         default: ALU_B = B_EX_DATA;
+    endcase
+    
+    // Para stores: aplicar forwarding a PB_EX (valor del registro, NO immediate)
+    case (fwdB_sel)
+        2'b00: STORE_DATA_EX = PB_EX;  // Valor desde register file
+        2'b01: STORE_DATA_EX = ALU_OUT_MEM;  // Forward desde MEM
+        2'b10: STORE_DATA_EX = PW_WB;  // Forward desde WB
+        default: STORE_DATA_EX = PB_EX;
     endcase
 end
 
@@ -449,7 +459,7 @@ always @(posedge clk) begin
         B_MEM       <= 32'b0;
     end else begin
         ALU_OUT_MEM <= ALU_OUT_EX;
-        B_MEM       <= ALU_B;  // Ya no se usa para stores
+        B_MEM       <= STORE_DATA_EX;  // Valor correcto del registro (con forwarding)
     end
 end
 

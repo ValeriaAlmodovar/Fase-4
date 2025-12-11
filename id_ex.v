@@ -74,7 +74,7 @@ module ID_EX (
             B_out      <= B_in;
             L_out      <= L_in;
             SE_out     <= SE_in;
-            RD_out     <= RD_in;  // <- pasar RD_ID a EX correctamente
+            RD_out     <= RD_in;  // <- pasar RD_ID a EX 
         end
 
         // ===== DEBUG: ID/EX =====

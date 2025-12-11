@@ -1,6 +1,5 @@
 //======================================
-// ROM — almacena bytes del programa SPARC
-// leer archivos HEX y unir bytes en words de 32 bits
+// ROM 
 //======================================
 module ROM (
     input  wire [8:0] A,       // byte address
