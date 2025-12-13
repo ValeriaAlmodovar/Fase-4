@@ -23,6 +23,12 @@ module ID_EX (
     input  wire        SE_in,
     input  wire [4:0]  RD_in,      // <- destino en ID
 
+    // Operand-use flags
+    input  wire        A_S_in,
+    input  wire        B_S_in,
+    input  wire        D_S_in,
+    input  wire        ID_NOP_in,
+
     // Outputs (control + destino)
     output reg  [3:0]  SOH_OP_out,
     output reg  [3:0]  ALU_OP_out,
@@ -39,6 +45,10 @@ module ID_EX (
     output reg         L_out,
     output reg         SE_out,
     output reg  [4:0]  RD_out      // <- destino en EX
+    output reg         A_S_out,
+    output reg         B_S_out,
+    output reg         D_S_out,
+    output reg         ID_NOP_out
 );
 
     always @(posedge clk) begin
@@ -58,6 +68,11 @@ module ID_EX (
             L_out      <= 1'b0;
             SE_out     <= 1'b0;
             RD_out     <= 5'd0;   // <- en burbuja, destino = 0
+            A_S_out    <= 1'b0;
+            B_S_out    <= 1'b0;
+            D_S_out    <= 1'b0;
+            ID_NOP_out <= 1'b1;
+            
         end
         else begin
             SOH_OP_out <= SOH_OP_in;
@@ -75,6 +90,10 @@ module ID_EX (
             L_out      <= L_in;
             SE_out     <= SE_in;
             RD_out     <= RD_in;  // <- pasar RD_ID a EX 
+            A_S_out    <= A_S_in;
+            B_S_out    <= B_S_in;
+            D_S_out    <= D_S_in;
+            ID_NOP_out <= ID_NOP_in;
         end
 
         // ===== DEBUG: ID/EX =====
