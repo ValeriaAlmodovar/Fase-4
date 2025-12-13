@@ -44,7 +44,7 @@ module ID_EX (
     output reg         B_out,
     output reg         L_out,
     output reg         SE_out,
-    output reg  [4:0]  RD_out      // <- destino en EX
+    output reg  [4:0]  RD_out,      // <- destino en EX
     output reg         A_S_out,
     output reg         B_S_out,
     output reg         D_S_out,
