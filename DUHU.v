@@ -1,6 +1,5 @@
 //===============================================================
 // DUHU — Data Unit + Hazard Unit
-// Implements forwarding + hazard detection according to SPARC
 //===============================================================
 module DUHU (
     // ===============================
@@ -8,13 +7,16 @@ module DUHU (
     // ===============================
     input  wire        A_S_EX,      // rs1 used
     input  wire        B_S_EX,      // rs2 used
-    input  wire        D_S_EX,      // rd used as source (rare)
+    input  wire        D_S_EX,      // rd used as source 
     input  wire        SR_EX,       // shift-by-register uses rs2
     input  wire        ID_NOP_EX,   // bubble / NOP in EX
 
     // ===============================
     // Register numbers
     // ===============================
+    input  wire [4:0]  RA_ID,       // rs1 in ID
+    input  wire [4:0]  RB_ID,       // rs2 in ID
+    input  wire [4:0]  RD_ID,       // rd in ID (for stores)
     input  wire [4:0]  RA_EX,
     input  wire [4:0]  RB_EX,
     input  wire [4:0]  RD_EX,
@@ -36,10 +38,17 @@ module DUHU (
     input  wire        USE_CC_ID,   // ID instruction uses CC (branch)
 
     // ===============================
-    // Outputs: forwarding
+    // Outputs: EX forwarding
     // ===============================
     output reg  [1:0]  sel_A,
     output reg  [1:0]  sel_B,
+
+    // ===============================
+    // Outputs: ID forwarding
+    // ===============================
+    output reg  [1:0]  A_S,         // forward to PA in ID
+    output reg  [1:0]  B_S,         // forward to PB in ID
+    output reg  [1:0]  D_S,         // forward to PD in ID
 
     // ===============================
     // Outputs: pipeline control
@@ -50,7 +59,7 @@ module DUHU (
 );
 
     //===========================================================
-    // 1. FORWARDING LOGIC
+    // 1. EX STAGE FORWARDING
     //===========================================================
     always @(*) begin
         // defaults
@@ -75,7 +84,47 @@ module DUHU (
     end
 
     //===========================================================
-    // 2. HAZARD DETECTION
+    // 2. ID STAGE FORWARDING (from EX/MEM/WB to register file outputs)
+    //===========================================================
+    always @(*) begin
+        // defaults
+        A_S = 2'b00;
+        B_S = 2'b00;
+        D_S = 2'b00;
+
+        // ---------- PA (rs1 in ID) ----------
+        if (RA_ID != 5'd0) begin
+            if (RF_LE_EX && RD_EX == RA_ID && !ID_NOP_EX)
+                A_S = 2'b11;   // from EX (new priority)
+            else if (RF_LE_MEM && RD_MEM == RA_ID)
+                A_S = 2'b01;   // from MEM
+            else if (RF_LE_WB && RD_WB == RA_ID)
+                A_S = 2'b10;   // from WB
+        end
+
+        // ---------- PB (rs2 in ID) ----------
+        if (RB_ID != 5'd0) begin
+            if (RF_LE_EX && RD_EX == RB_ID && !ID_NOP_EX)
+                B_S = 2'b11;   // from EX (new priority)
+            else if (RF_LE_MEM && RD_MEM == RB_ID)
+                B_S = 2'b01;   // from MEM
+            else if (RF_LE_WB && RD_WB == RB_ID)
+                B_S = 2'b10;   // from WB
+        end
+
+        // ---------- PD (rd in ID, for stores) ----------
+        if (RD_ID != 5'd0) begin
+            if (RF_LE_EX && RD_EX == RD_ID && !ID_NOP_EX)
+                D_S = 2'b11;   // from EX (new priority)
+            else if (RF_LE_MEM && RD_MEM == RD_ID)
+                D_S = 2'b01;   // from MEM
+            else if (RF_LE_WB && RD_WB == RD_ID)
+                D_S = 2'b10;   // from WB
+        end
+    end
+
+    //===========================================================
+    // 3. HAZARD DETECTION
     //===========================================================
 
     // ---------- Load-use RAW hazard ----------

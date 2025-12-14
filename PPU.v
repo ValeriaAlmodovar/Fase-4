@@ -172,11 +172,43 @@ assign R17 = RF.reg_out[17];
 assign R18 = RF.reg_out[18];
 
 // =============================================================
+//  ID STAGE FORWARDING MUXES
+// =============================================================
+wire [1:0] fwd_A_S, fwd_B_S, fwd_D_S;
+reg [31:0] PA_ID_FWD, PB_ID_FWD, PD_ID_FWD;
+
+always @(*) begin
+    // Forward PA (rs1)
+    case (fwd_A_S)
+        2'b11: PA_ID_FWD = ALU_OUT_EX;
+        2'b01: PA_ID_FWD = ALU_OUT_MEM;
+        2'b10: PA_ID_FWD = PW_WB;
+        default: PA_ID_FWD = PA_ID;
+    endcase
+
+    // Forward PB (rs2)
+    case (fwd_B_S)
+        2'b11: PB_ID_FWD = ALU_OUT_EX;
+        2'b01: PB_ID_FWD = ALU_OUT_MEM;
+        2'b10: PB_ID_FWD = PW_WB;
+        default: PB_ID_FWD = PB_ID;
+    endcase
+
+    // Forward PD (rd for stores)
+    case (fwd_D_S)
+        2'b11: PD_ID_FWD = ALU_OUT_EX;
+        2'b01: PD_ID_FWD = ALU_OUT_MEM;
+        2'b10: PD_ID_FWD = PW_WB;
+        default: PD_ID_FWD = PD_ID;
+    endcase
+end
+
+// =============================================================
 //  SOH
 // =============================================================
 wire [31:0] SOH_OUT_ID;
 SOH soh (
-    .R     (PB_ID),
+    .R     (PB_ID_FWD),
     .imm13 (I_ID[12:0]),
     .imm22 (I_ID[21:0]),
     .S     (SOH_OP_ID),
@@ -199,7 +231,9 @@ TAG tag_block (
     .TAG_OUT(TAG_OUT_ID)
 );
 
-assign mux_pc_in1 = TAG_OUT_ID;
+always @(*) begin
+    mux_pc_in1 = TAG_OUT_ID;
+end
 
 reset_handler RH (
     .R       (reset),
@@ -213,7 +247,7 @@ reset_handler RH (
 );
 
 // =============================================================
-//  ID/EX (patched)
+//  ID/EX 
 // =============================================================
 wire [3:0] SOH_OP_EX, ALU_OP_EX;
 wire       RW_EX, E_EX, CC_WE_EX, USE_CC_EX;
@@ -287,9 +321,9 @@ always @(posedge clk) begin
         A_EX <= 0; B_EX_DATA <= 0; PB_EX <= 0;
         RA_EX <= 0; RB_EX <= 0; PC_EX <= 0;
     end else if (!stall_D) begin
-        A_EX <= PA_ID;
+        A_EX <= PA_ID_FWD;
         B_EX_DATA <= SOH_OUT_ID;
-        PB_EX <= PB_ID;
+        PB_EX <= PB_ID_FWD;
         RA_EX <= RA_ID;
         RB_EX <= RB_ID;
         PC_EX <= PC_ID;
@@ -312,6 +346,9 @@ DUHU DUHU0 (
     .SR_EX     (SR_EX),
     .ID_NOP_EX (ID_NOP_EX),
 
+    .RA_ID     (RA_ID),
+    .RB_ID     (RB_ID),
+    .RD_ID     (RD_ID),
     .RA_EX     (RA_EX),
     .RB_EX     (RB_EX),
     .RD_EX     (RD_EX),
@@ -328,6 +365,9 @@ DUHU DUHU0 (
 
     .sel_A     (fwdA_sel),
     .sel_B     (fwdB_sel),
+    .A_S       (fwd_A_S),
+    .B_S       (fwd_B_S),
+    .D_S       (fwd_D_S),
 
     .stall_F   (stall_F),
     .stall_D   (stall_D),
